@@ -1,4 +1,4 @@
-import { h, render } from "https://esm.sh/preact@10.10.6"
+import { h, render } from "preact"
 
 type OnRemoveFunc = (elem:Element, ...args:Array<unknown>)=>void
 

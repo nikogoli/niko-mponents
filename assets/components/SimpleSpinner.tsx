@@ -1,5 +1,5 @@
 /** @jsx h */
-import { h } from "https://esm.sh/preact@10.10.6"
+import { h } from "preact"
 
 export default function SimpleSpinner(props:{
   size?: number,

@@ -1,4 +1,4 @@
-import { render, createElement, VNode } from "https://esm.sh/preact@10.10.6"
+import { render, createElement, VNode } from "preact"
 
 export default function useClosable(props:{
   rootID: string,

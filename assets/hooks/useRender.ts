@@ -1,4 +1,4 @@
-import { h, render } from "https://esm.sh/preact@10.10.6"
+import { h, render } from "preact"
 
 
 export default function useRender (
