@@ -5,6 +5,7 @@ export default function useClosable(props:{
   opacity: number,
   innerElem?: VNode,
   position?: {x:number, y:number, corner?:"tl"|"tr"|"bl"|"br"},
+  not_center?: true,
   on_settle?: () => void,
 }):[
   Set:()=>void, Settle:()=>void,
@@ -33,7 +34,9 @@ export default function useClosable(props:{
     
     if (props.innerElem){
       temp_elem.style.display = "grid"
-      temp_elem.style.placeContent = "center"
+      if (!props.not_center){
+        temp_elem.style.placeContent = "center"
+      }
       let container = document.createElement("div")
       render(props.innerElem, container)
       const inner_elem = container.firstElementChild! as HTMLElement
