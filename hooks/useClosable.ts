@@ -8,7 +8,7 @@ export default function useClosable(props:{
   not_center?: true,
   on_settle?: () => void,
 }):[
-  Set:()=>void, Settle:()=>void,
+  Set:()=>HTMLElement, Settle:()=>void,
 ]{
   const Settle = () => {
     const top_elem = document.getElementById(props.rootID)
@@ -62,12 +62,15 @@ export default function useClosable(props:{
         inner_elem.style.left = String(posi_x)
         inner_elem.style.top = String(posi_y)
       }
+      console.log("moutend")
+      return inner_elem
     } else {
       temp_elem.style.background = `rgba(0, 0, 0, ${props.opacity/100})`
       temp_elem.addEventListener("click", Settle)
       top_elem.appendChild(temp_elem)
+      console.log("moutend")
+      return temp_elem
     }
-    console.log("moutend")
   }
   return [Set, Settle]
 }
