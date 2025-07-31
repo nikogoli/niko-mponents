@@ -6,10 +6,13 @@ export default function useClosable(props:{
   innerElem?: VNode,
   position?: {x:number, y:number, corner?:"tl"|"tr"|"bl"|"br"},
   not_center?: true,
+  z_value?: number,
   on_settle?: () => void,
 }):[
   Set:()=>[outer:HTMLElement, inner:HTMLElement|null], Settle:()=>void,
 ]{
+  const baseZ = props.z_value ?? 10
+
   const Settle = () => {
     const top_elem = document.getElementById(props.rootID)
     const temp_elem = document.getElementById("temp")
@@ -24,7 +27,7 @@ export default function useClosable(props:{
     const elem = createElement(
       "div",
       {id: "temp", style: {
-        position: "fixed", width: "100%", height: "100%", top: "0", left: "0", zIndex: "10",
+        position: "fixed", width: "100%", height: "100%", top: "0", left: "0", zIndex: String(baseZ),
       }}
     )
     const top_elem = document.getElementById(props.rootID)!
@@ -40,12 +43,12 @@ export default function useClosable(props:{
       let container = document.createElement("div")
       render(props.innerElem, container)
       const inner_elem = container.firstElementChild! as HTMLElement
-      inner_elem.style.zIndex = "15"
+      inner_elem.style.zIndex = String(baseZ+5)
       temp_elem.appendChild(inner_elem)
       container = document.createElement("div")
       const backdp = createElement(
         "div", {style: {
-          position: "absolute", width: "100%", height: "100%", top: "0", left: "0", zIndex: "11",
+          position: "absolute", width: "100%", height: "100%", top: "0", left: "0", zIndex: String(baseZ+1),
           background: `rgba(0, 0, 0, ${props.opacity/100})`
         }}
       )
