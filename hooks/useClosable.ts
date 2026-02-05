@@ -1,5 +1,7 @@
 import { render, createElement, VNode } from "preact"
 
+
+
 export default function useClosable(props:{
   rootID: string,
   opacity: number,
@@ -24,6 +26,7 @@ export default function useClosable(props:{
     if (props.on_settle){ props.on_settle() }
   }
 
+
   function Set():[outer:HTMLElement, inner:HTMLElement|null]{
     const elem = createElement(
       "div",
@@ -41,11 +44,13 @@ export default function useClosable(props:{
       if (!props.not_center){
         outer.style.placeContent = "center"
       }
+
       let container = document.createElement("div")
       render(props.innerElem, container)
       const inner = container.firstElementChild! as HTMLElement
       inner.style.zIndex = String(baseZ+5)
       outer.appendChild(inner)
+
       container = document.createElement("div")
       const backdp = createElement(
         "div", {style: {
@@ -62,8 +67,12 @@ export default function useClosable(props:{
       if (props.position){
         outer.style.display = "block"
         const { corner, x, y } = props.position
-        const posi_x = corner?.includes("r") ? x -Number(inner.clientWidth) : x
-        const posi_y = corner?.includes("b") ? y -Number(inner.clientHeight) : y
+        const posi_x = corner
+          ? foldWidthOverflow(inner, outer, x, corner.includes("r") ? "toLeft" : "toRight" )
+          : x
+        const posi_y = corner
+          ? foldHeightOverflow(inner, outer, y, corner.includes("b") ? "toTop" : "toBottom" )
+          : y
         inner.style.left = String(posi_x)
         inner.style.top = String(posi_y)
       }
@@ -79,4 +88,44 @@ export default function useClosable(props:{
     }
   }
   return [Set, Settle]
+}
+
+
+// ----------- Util -----------------------------------------
+
+function foldWidthOverflow(
+  self: HTMLElement,
+  container: HTMLElement,
+  basePosi: number,
+  dir: "toLeft" | "toRight"
+){
+  if (dir == "toRight"){
+    return basePosi + self.clientWidth <= container.clientWidth
+      ? basePosi
+      : container.clientWidth - self.clientWidth
+  }
+  else {
+    return basePosi - self.clientWidth >= 0
+      ? basePosi
+      : 0
+  }
+}
+
+
+function foldHeightOverflow(
+  self: HTMLElement,
+  container: HTMLElement,
+  basePosi: number,
+  dir: "toBottom" | "toTop"
+){
+  if (dir == "toBottom"){
+    return basePosi + self.clientHeight <= container.clientHeight
+      ? basePosi
+      : container.clientHeight - self.clientHeight
+  }
+  else {
+    return basePosi - self.clientHeight >= 0
+      ? basePosi
+      : 0
+  }
 }
