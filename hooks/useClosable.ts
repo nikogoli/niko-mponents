@@ -8,6 +8,7 @@ export default function useClosable(props:{
   not_center?: true,
   z_value?: number,
   on_settle?: () => void,
+  dev?: true,
 }):[
   Set:()=>[outer:HTMLElement, inner:HTMLElement|null], Settle:()=>void,
 ]{
@@ -17,7 +18,7 @@ export default function useClosable(props:{
     const top_elem = document.getElementById(props.rootID)
     const temp_elem = document.getElementById("temp")
     if (top_elem && temp_elem){
-      console.log("delete")
+      if (props.dev){ console.log("useClosable: delete container") }
       top_elem.removeChild(temp_elem)
     }
     if (props.on_settle){ props.on_settle() }
@@ -57,6 +58,7 @@ export default function useClosable(props:{
       dp.addEventListener("click", Settle)
       temp_elem.appendChild(dp)
       top_elem.appendChild(temp_elem)
+
       if (props.position){
         temp_elem.style.display = "block"
         const { corner, x, y } = props.position
@@ -65,13 +67,14 @@ export default function useClosable(props:{
         inner_elem.style.left = String(posi_x)
         inner_elem.style.top = String(posi_y)
       }
-      console.log("moutend")
+      if (props.dev){ console.log("useClosable: mount container") }
       return [temp_elem, inner_elem]
-    } else {
+    }
+    else {
       temp_elem.style.background = `rgba(0, 0, 0, ${props.opacity/100})`
       temp_elem.addEventListener("click", Settle)
       top_elem.appendChild(temp_elem)
-      console.log("moutend")
+      if (props.dev){ console.log("useClosable: mount container") }
       return [temp_elem, null]
     }
   }
