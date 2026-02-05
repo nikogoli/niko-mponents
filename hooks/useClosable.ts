@@ -14,7 +14,7 @@ export default function useClosable(props:{
 ]{
   const baseZ = props.z_value ?? 10
 
-  const Settle = () => {
+  function Settle(){
     const top_elem = document.getElementById(props.rootID)
     const temp_elem = document.getElementById("temp")
     if (top_elem && temp_elem){
@@ -24,7 +24,7 @@ export default function useClosable(props:{
     if (props.on_settle){ props.on_settle() }
   }
 
-  const Set = () => {
+  function Set():[outer:HTMLElement, inner:HTMLElement|null]{
     const elem = createElement(
       "div",
       {id: "temp", style: {
@@ -34,18 +34,18 @@ export default function useClosable(props:{
     const top_elem = document.getElementById(props.rootID)!
     const container = document.createElement("div")
     render(elem, container)
-    const temp_elem = container.firstElementChild! as HTMLElement
+    const outer = container.firstElementChild! as HTMLElement
     
     if (props.innerElem){
-      temp_elem.style.display = "grid"
+      outer.style.display = "grid"
       if (!props.not_center){
-        temp_elem.style.placeContent = "center"
+        outer.style.placeContent = "center"
       }
       let container = document.createElement("div")
       render(props.innerElem, container)
-      const inner_elem = container.firstElementChild! as HTMLElement
-      inner_elem.style.zIndex = String(baseZ+5)
-      temp_elem.appendChild(inner_elem)
+      const inner = container.firstElementChild! as HTMLElement
+      inner.style.zIndex = String(baseZ+5)
+      outer.appendChild(inner)
       container = document.createElement("div")
       const backdp = createElement(
         "div", {style: {
@@ -56,26 +56,26 @@ export default function useClosable(props:{
       render(backdp, container)
       const dp = container.firstElementChild!
       dp.addEventListener("click", Settle)
-      temp_elem.appendChild(dp)
-      top_elem.appendChild(temp_elem)
+      outer.appendChild(dp)
+      top_elem.appendChild(outer)
 
       if (props.position){
-        temp_elem.style.display = "block"
+        outer.style.display = "block"
         const { corner, x, y } = props.position
-        const posi_x = corner?.includes("r") ? x -Number(inner_elem.clientWidth) : x
-        const posi_y = corner?.includes("b") ? y -Number(inner_elem.clientHeight) : y
-        inner_elem.style.left = String(posi_x)
-        inner_elem.style.top = String(posi_y)
+        const posi_x = corner?.includes("r") ? x -Number(inner.clientWidth) : x
+        const posi_y = corner?.includes("b") ? y -Number(inner.clientHeight) : y
+        inner.style.left = String(posi_x)
+        inner.style.top = String(posi_y)
       }
       if (props.dev){ console.log("useClosable: mount container") }
-      return [temp_elem, inner_elem]
+      return [outer, inner]
     }
     else {
-      temp_elem.style.background = `rgba(0, 0, 0, ${props.opacity/100})`
-      temp_elem.addEventListener("click", Settle)
-      top_elem.appendChild(temp_elem)
+      outer.style.background = `rgba(0, 0, 0, ${props.opacity/100})`
+      outer.addEventListener("click", Settle)
+      top_elem.appendChild(outer)
       if (props.dev){ console.log("useClosable: mount container") }
-      return [temp_elem, null]
+      return [outer, null]
     }
   }
   return [Set, Settle]
