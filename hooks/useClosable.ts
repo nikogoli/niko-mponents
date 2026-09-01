@@ -1,21 +1,22 @@
-import { render, createElement, VNode } from "preact"
+import { render, createElement, JSX } from "preact"
 
 
 
 export default function useClosable(props:{
   rootID: string,
   opacity: number,
-  innerElem?: VNode,
+  innerElemFunc?: (props:{event?: MouseEvent}) => JSX.Element,
   not_center?: true,
   z_value?: number,
   dev?: true,
 }):[
   Set:(props:{
-    position?: {x:number, y:number, corner?:"tl"|"tr"|"bl"|"br"}
+    position?: {x:number, y:number, corner?:"tl"|"tr"|"bl"|"br"},
+    mouseEvent?: MouseEvent,
   })=>[outer:HTMLElement, inner:HTMLElement|null],
   Settle:()=>void,
 ]{
-  const { rootID, opacity, innerElem, not_center, z_value, dev } = props
+  const { rootID, opacity, innerElemFunc, not_center, z_value, dev } = props
   const baseZ = z_value ?? 10
 
   function Settle(){
@@ -29,9 +30,10 @@ export default function useClosable(props:{
 
 
   function Set(props:{
-    position?: {x:number, y:number, corner?:"tl"|"tr"|"bl"|"br"}
+    position?: {x:number, y:number, corner?:"tl"|"tr"|"bl"|"br"},
+    mouseEvent?: MouseEvent,
   }):[outer:HTMLElement, inner:HTMLElement|null]{
-    const { position } = props
+    const { position, mouseEvent } = props
     const elem = createElement(
       "div",
       {id: "temp", style: {
@@ -43,14 +45,14 @@ export default function useClosable(props:{
     render(elem, container)
     const outer = container.firstElementChild! as HTMLElement
     
-    if (innerElem){
+    if (innerElemFunc){
       outer.style.display = "grid"
       if (!not_center){
         outer.style.placeContent = "center"
       }
 
       let container = document.createElement("div")
-      render(innerElem, container)
+      render(innerElemFunc({event: mouseEvent}), container)
       const inner = container.firstElementChild! as HTMLElement
       inner.style.zIndex = String(baseZ+5)
       outer.appendChild(inner)
