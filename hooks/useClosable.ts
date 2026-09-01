@@ -9,21 +9,20 @@ export default function useClosable(props:{
   position?: {x:number, y:number, corner?:"tl"|"tr"|"bl"|"br"},
   not_center?: true,
   z_value?: number,
-  on_settle?: () => void,
   dev?: true,
 }):[
   Set:()=>[outer:HTMLElement, inner:HTMLElement|null], Settle:()=>void,
 ]{
-  const baseZ = props.z_value ?? 10
+  const { rootID, opacity, innerElem, position, not_center, z_value, dev } = props
+  const baseZ = z_value ?? 10
 
   function Settle(){
-    const top_elem = document.getElementById(props.rootID)
+    const top_elem = document.getElementById(rootID)
     const temp_elem = document.getElementById("temp")
     if (top_elem && temp_elem){
-      if (props.dev){ console.log("useClosable: delete container") }
+      if (dev){ console.log("useClosable: delete container") }
       top_elem.removeChild(temp_elem)
     }
-    if (props.on_settle){ props.on_settle() }
   }
 
 
@@ -34,19 +33,19 @@ export default function useClosable(props:{
         position: "fixed", width: "100%", height: "100%", top: "0", left: "0", zIndex: String(baseZ),
       }}
     )
-    const top_elem = document.getElementById(props.rootID)!
+    const top_elem = document.getElementById(rootID)!
     const container = document.createElement("div")
     render(elem, container)
     const outer = container.firstElementChild! as HTMLElement
     
-    if (props.innerElem){
+    if (innerElem){
       outer.style.display = "grid"
-      if (!props.not_center){
+      if (!not_center){
         outer.style.placeContent = "center"
       }
 
       let container = document.createElement("div")
-      render(props.innerElem, container)
+      render(innerElem, container)
       const inner = container.firstElementChild! as HTMLElement
       inner.style.zIndex = String(baseZ+5)
       outer.appendChild(inner)
@@ -55,7 +54,7 @@ export default function useClosable(props:{
       const backdp = createElement(
         "div", {style: {
           position: "absolute", width: "100%", height: "100%", top: "0", left: "0", zIndex: String(baseZ+1),
-          background: `rgba(0, 0, 0, ${props.opacity/100})`
+          background: `rgba(0, 0, 0, ${opacity/100})`
         }}
       )
       render(backdp, container)
@@ -64,9 +63,9 @@ export default function useClosable(props:{
       outer.appendChild(dp)
       top_elem.appendChild(outer)
 
-      if (props.position){
+      if (position){
         outer.style.display = "block"
-        const { corner, x, y } = props.position
+        const { corner, x, y } = position
         const posi_x = corner
           ? foldWidthOverflow(inner, outer, x, corner.includes("r") ? "toLeft" : "toRight" )
           : x
@@ -76,14 +75,14 @@ export default function useClosable(props:{
         inner.style.left = String(posi_x)
         inner.style.top = String(posi_y)
       }
-      if (props.dev){ console.log("useClosable: mount container") }
+      if (dev){ console.log("useClosable: mount container") }
       return [outer, inner]
     }
     else {
-      outer.style.background = `rgba(0, 0, 0, ${props.opacity/100})`
+      outer.style.background = `rgba(0, 0, 0, ${opacity/100})`
       outer.addEventListener("click", Settle)
       top_elem.appendChild(outer)
-      if (props.dev){ console.log("useClosable: mount container") }
+      if (dev){ console.log("useClosable: mount container") }
       return [outer, null]
     }
   }
