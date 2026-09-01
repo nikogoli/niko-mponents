@@ -6,14 +6,16 @@ export default function useClosable(props:{
   rootID: string,
   opacity: number,
   innerElem?: VNode,
-  position?: {x:number, y:number, corner?:"tl"|"tr"|"bl"|"br"},
   not_center?: true,
   z_value?: number,
   dev?: true,
 }):[
-  Set:()=>[outer:HTMLElement, inner:HTMLElement|null], Settle:()=>void,
+  Set:(props:{
+    position?: {x:number, y:number, corner?:"tl"|"tr"|"bl"|"br"}
+  })=>[outer:HTMLElement, inner:HTMLElement|null],
+  Settle:()=>void,
 ]{
-  const { rootID, opacity, innerElem, position, not_center, z_value, dev } = props
+  const { rootID, opacity, innerElem, not_center, z_value, dev } = props
   const baseZ = z_value ?? 10
 
   function Settle(){
@@ -26,7 +28,10 @@ export default function useClosable(props:{
   }
 
 
-  function Set():[outer:HTMLElement, inner:HTMLElement|null]{
+  function Set(props:{
+    position?: {x:number, y:number, corner?:"tl"|"tr"|"bl"|"br"}
+  }):[outer:HTMLElement, inner:HTMLElement|null]{
+    const { position } = props
     const elem = createElement(
       "div",
       {id: "temp", style: {
