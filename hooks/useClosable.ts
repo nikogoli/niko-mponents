@@ -5,7 +5,7 @@ import { render, createElement, JSX } from "preact"
 export default function useClosable(props:{
   rootID: string,
   opacity: number,
-  innerElemFunc?: (props:{event?: MouseEvent}) => JSX.Element,
+  innerElemFunc?: (props:{settler: ()=>void, event?: MouseEvent}) => JSX.Element,
   not_center?: true,
   z_value?: number,
   dev?: true,
@@ -52,7 +52,7 @@ export default function useClosable(props:{
       }
 
       let container = document.createElement("div")
-      render(innerElemFunc({event: mouseEvent}), container)
+      render(innerElemFunc({settler: Settle, event: mouseEvent}), container)
       const inner = container.firstElementChild! as HTMLElement
       inner.style.zIndex = String(baseZ+5)
       outer.appendChild(inner)
